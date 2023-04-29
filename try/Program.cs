@@ -1,4 +1,6 @@
-﻿namespace Try;
+﻿using System.Security.Cryptography;
+
+namespace Try;
 internal class Program
 {
     /*
@@ -10,55 +12,133 @@ internal class Program
     Предусмотреть случай выхода за границы диапазона, определяемого типом int, неправильный ввод.
     */
 
-    static void Function1() // фигня какая-то пока получилась
+
+
+    static string ConverterFromBin(string binNumber, int numeralSystem)
     {
-        int number = 0;
-        int menu = 0;
+        int newNumber = 0;
 
-        try
+        if (numeralSystem == 10) // перевод в десятичную
         {
-            Console.Write("Введите число: ");
-            number = int.Parse(Console.ReadLine());
-
-
-            Console.Clear();
-            Console.WriteLine($"ВЫБЕРИТЕ КУДА ХОТИТЕ ПЕРЕВЕСТИ ЧИСЛО {number} ");
-            Console.WriteLine("1 - в 2-ичную систему счисления");
-            Console.WriteLine("2 - в 8-ричную систему счисления");
-            Console.WriteLine("3 - в 10-ричную систему счисления");
-            
-            while (true)
+            for (int i = 0; i < binNumber.Length; ++i)
             {
-                Console.Write("Ваш выбор: ");
-                menu = int.Parse(Console.ReadLine());
+                newNumber += (int) Math.Pow(2, i) * (binNumber[binNumber.Length - i - 1] - 48);  
+            }
+        }
+        else // перевод в восьмеричную
+        {
+            while (binNumber.Length % 3 != 0) // добавляются нули (например, было 1001, стало  001 001 - это по формуле нужно)
+            {
+                binNumber = binNumber.Insert(0, "0");
+            }
 
-                if (menu == 1 || menu == 2 || menu == 3)
+            for (int i = 0; i < binNumber.Length; i += 3) //
+            {
+                if (binNumber.Length != 3)
                 {
-                    break;
+                    newNumber += Convert.ToInt32(ConverterFromBin(binNumber.Remove(i, 3), 10)) * (int) Math.Pow(10, i / 3);
                 }
                 else
                 {
-                    Console.WriteLine("ОШИБКА: вы ввели фигню");
+                    newNumber += Convert.ToInt32(ConverterFromBin(binNumber, 10));
                 }
             }
+        }
+
+        return Convert.ToString(newNumber);
+    }
+
+    static string ConverterFromOct(int binNumber, int numeralSystem)
+    {
+        string newNumber = "";
+
+        for (int i = 0; binNumber / numeralSystem > 0; ++i)
+        {
+            newNumber += binNumber % numeralSystem;
+            binNumber /= numeralSystem;
+        }
+        newNumber += binNumber % numeralSystem;
+
+        return new string(newNumber.Reverse().ToArray());
+    }
+
+    static string ConverterFromDec(int decNumber, int numeralSystem)
+    {
+        string newNumber = "";
+
+        for (int i = 0; decNumber / numeralSystem > 0; ++i)
+        {
+            newNumber += decNumber % numeralSystem;
+            decNumber /= numeralSystem;
+        }
+        newNumber += decNumber % numeralSystem;
+
+        return new string(newNumber.Reverse().ToArray());
+    }
 
 
+
+    static void Function1()
+    {
+        int number = 0;
+        int choice = 0;
+
+
+        Console.WriteLine($"ВЫБЕРИТЕ ОТКУДА И КУДА ХОТИТЕ ПЕРЕВЕСТИ ЧИСЛО");
+        Console.WriteLine("1 - из 2-ичной в 10-ичную");
+        Console.WriteLine("2 - из 2-ичной в 8-ричную\n");
+
+        Console.WriteLine("3 - из 8-ричной в 2-ичную");
+        Console.WriteLine("4 - из 8-ричной в 10-ричную\n");
+
+        Console.WriteLine("5 - из 10-ичной в 2-ичную");
+        Console.WriteLine("6 - из 10-ичной в 8-ричную\n");
+
+        try
+        { 
+            Console.Write("Ваш выбор: ");
+            choice = int.Parse(Console.ReadLine());
+
+            if (choice < 1 || choice > 6)
+            {
+                throw new Exception($"ваш ввод ({choice}) выходит за диапазон выбора!");
+            }
+        
+            Console.Write("Введите число: ");
+            number = int.Parse(Console.ReadLine());
         }
         catch (OverflowException oe) // выход за диапазон int
         {
-            Console.WriteLine($"ОШИБКА: ваше число вне диапазона! ({oe.Message})\n");
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: ваш ввод вне диапазона! ({oe.Message})\n"); Console.ResetColor();
             Function1();
         }
         catch (FormatException ae) // ввод не int
         {
-            Console.WriteLine($"ОШИБКА: ваше число не является числом! ({ae.Message})\n");
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: ваш ввод не является числом! ({ae.Message})\n"); Console.ResetColor();
             Function1();
         }
         catch (Exception e) // иные исключения
         {
-            Console.WriteLine($"ОШИБКА: ({e.Message})\n");
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: {e.Message}\n"); Console.ResetColor();
             Function1();
         }
+
+
+
+        Console.Write("Результат: ");
+        switch (choice) 
+        {
+            case 1: Console.WriteLine(ConverterFromBin(Convert.ToString(number), 10)); break; // +
+            case 2: Console.WriteLine(ConverterFromBin(Convert.ToString(number), 8)); break; // +
+            case 3: Console.WriteLine(ConverterFromOct(number, 2)); break; // 
+            case 4: Console.WriteLine(ConverterFromOct(number, 10)); break; //
+            case 5: Console.WriteLine(ConverterFromDec(number, 2)); break; // +
+            case 6: Console.WriteLine(ConverterFromDec(number, 8)); break; // +
+
+        }
+
+
+
     }
 
     /*
