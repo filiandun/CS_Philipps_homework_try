@@ -34,7 +34,7 @@ internal class Program
         return Convert.ToString(newNumber);
     }
 
-    //
+
 
     static string ConverterFromOctToBin(int octNumber)
     {
@@ -58,7 +58,7 @@ internal class Program
         return Convert.ToString(newNumber);
     }
 
-    //
+
 
     static string ConverterFromDecToBin(int decNumber)
     {
@@ -68,12 +68,10 @@ internal class Program
         {
             newNumber += decNumber % 2;
             decNumber /= 2;
-            Console.WriteLine($"newNumber {newNumber}");
         }
         newNumber += decNumber % 2;
-        Console.WriteLine($"newNumber {newNumber}");
 
-        return new string(newNumber.Reverse().ToArray());
+        return new string(newNumber.Reverse().ToArray()); // разворот строки
     }
 
     static string ConverterFromDecToOct(int decNumber)
@@ -87,72 +85,70 @@ internal class Program
         }
         newNumber += decNumber % 8;
 
-        return new string(newNumber.Reverse().ToArray());
+        return new string(newNumber.Reverse().ToArray()); // разворот строки
     }
 
-    //
+
 
     static void Exercise1()
     {
         int number;
         int choice;
 
-
-        Console.WriteLine($"ВЫБЕРИТЕ ОТКУДА И КУДА ХОТИТЕ ПЕРЕВЕСТИ ЧИСЛО");
-        Console.WriteLine("1 - из 2-ичной в 8-ричную");
-        Console.WriteLine("2 - из 2-ичной в 10-ичную\n");
-
-        Console.WriteLine("3 - из 8-ричной в 2-ичную");
-        Console.WriteLine("4 - из 8-ричной в 10-ричную\n");
-
-        Console.WriteLine("5 - из 10-ичной в 2-ичную");
-        Console.WriteLine("6 - из 10-ичной в 8-ричную\n");
-
-
         try
         { 
+            Console.WriteLine("ВЫБЕРИТЕ ОТКУДА И КУДА ХОТИТЕ ПЕРЕВЕСТИ ЧИСЛО");
+            Console.WriteLine("1 - из 2-ичной в 8-ричную");
+            Console.WriteLine("2 - из 2-ичной в 10-ичную\n");
+
+            Console.WriteLine("3 - из 8-ричной в 2-ичную");
+            Console.WriteLine("4 - из 8-ричной в 10-ричную\n");
+
+            Console.WriteLine("5 - из 10-ичной в 2-ичную");
+            Console.WriteLine("6 - из 10-ичной в 8-ричную\n");
+
             Console.Write("Ваш выбор: ");
             choice = int.Parse(Console.ReadLine());
 
             if (choice < 1 || choice > 6)
             {
-                throw new Exception($"ваш ввод ({choice}) выходит за диапазон выбора!");
+                throw new OverflowException($"ваш ввод ({choice}) выходит за диапазон выбора");
             }
         
-
             Console.Write("Введите число: ");
             number = int.Parse(Console.ReadLine());
-
 
             Console.Write("Результат: ");
             switch (choice)
             {
-                case 1: Console.WriteLine(ConverterFromBinToOct(Convert.ToString(number))); break; // +
-                case 2: Console.WriteLine(ConverterFromBinToDec(Convert.ToString(number))); break; // +
+                case 1: Console.WriteLine(ConverterFromBinToOct(Convert.ToString(number))); break;
+                case 2: Console.WriteLine(ConverterFromBinToDec(Convert.ToString(number))); break;
 
-                case 3: Console.WriteLine(ConverterFromOctToBin(number)); break; // +-
-                case 4: Console.WriteLine(ConverterFromOctToDec(number)); break; // +
+                case 3: Console.WriteLine(ConverterFromOctToBin(number)); break;
+                case 4: Console.WriteLine(ConverterFromOctToDec(number)); break;
 
-                case 5: Console.WriteLine(ConverterFromDecToBin(number)); break; // +
-                case 6: Console.WriteLine(ConverterFromDecToOct(number)); break; // +
+                case 5: Console.WriteLine(ConverterFromDecToBin(number)); break;
+                case 6: Console.WriteLine(ConverterFromDecToOct(number)); break;
             }
         }
-        catch (OverflowException oe) // выход за диапазон int
+
+        catch (OverflowException oe)
         {
-            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: ваш ввод вне диапазона! ({oe.Message})\n"); Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: {oe.Message}\n"); Console.ResetColor();
             Exercise1();
         }
-        catch (FormatException ae) // ввод не int
+        catch (FormatException)
         {
-            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: ваш ввод не является числом! ({ae.Message})\n"); Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: ваш ввод не является числом\n"); Console.ResetColor();
             Exercise1();
         }
-        catch (Exception e) // иные исключения
+        catch (Exception e)
         {
             Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: {e.Message}\n"); Console.ResetColor();
             Exercise1();
         }
     }
+
 
 
 
@@ -175,7 +171,7 @@ internal class Program
 
             if (input == "")
             {
-                throw new ArgumentNullException(nameof(input), "ОШИБКА: вы ничего не ввели!");
+                throw new ArgumentNullException(nameof(input), "вы ничего не ввели!");
             }
 
             input = input.ToLower(); // преобразует все символы в строке к нижнему регистру 
@@ -193,17 +189,21 @@ internal class Program
                 case "seven": Console.WriteLine("Ваше число: 7"); break;
                 case "eight": Console.WriteLine("Ваше число: 8"); break;
                 case "nine": Console.WriteLine("Ваше число: 9"); break;
-                default: throw new Exception("ОШИБКА: вы ввели неподходящее число!");
+                default: throw new OverflowException($"ваш ввод ({input}) вне диапазона");
             }
         }
         catch (ArgumentNullException ane)
         {
-            Console.WriteLine(ane.Message + "\n");
+            Console.WriteLine($"ОШИБКА: {ane.Message}\n");
             Exercise2();
+        }
+        catch (OverflowException oe)
+        {
+            Console.WriteLine($"ОШИБКА: {oe.Message}\n");
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message + "\n");
+            Console.WriteLine($"ОШИБКА: {e.Message}\n");
             Exercise2();
         }
     }
@@ -227,9 +227,7 @@ internal class Program
         private string FIO;
         private DateOnly dateOfIssue;
 
-
         public ForeignPassport() : this(0, "non", DateOnly.MinValue) { }
-
         public ForeignPassport(ushort ID, string FIO, DateOnly dateOfIssue)
         {
             this.ID = ID;
@@ -237,40 +235,34 @@ internal class Program
             this.dateOfIssue = dateOfIssue;
         }
 
-
         public void EnterID()
         {
             ushort input;
 
-            while (true)
+            try
             {
-                try
+                Console.Write("Введите номер паспорта (4 цифры): ");
+                input = Convert.ToUInt16(Console.ReadLine());
+
+                if (input < 1000 || input > 9999)
                 {
-                    Console.Write("Введите номер паспорта (4 цифры): ");
-                    input = Convert.ToUInt16(Console.ReadLine());
-
-                    if (input < 1000 || input > 9999)
-                    {
-                        throw new OverflowException($"{input} не четырёхзначное число");
-                    }
-
-                    this.ID = input;
-
-                    break;
+                    throw new OverflowException($"{input} не четырёхзначное число");
                 }
 
-                catch (FormatException fe)
-                {
-                    Console.WriteLine($"ОШИБКА: вы ввели не число!\n");
-                }
-                catch (OverflowException oe)
-                {
-                    Console.WriteLine($"ОШИБКА: {oe.Message}\n");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"ОШИБКА: {e.Message}\n");
-                }
+                this.ID = input;
+            }
+
+            catch (FormatException fe)
+            {
+                Console.WriteLine($"ОШИБКА: вы ввели не число\n");
+            }
+            catch (OverflowException oe)
+            {
+                Console.WriteLine($"ОШИБКА: {oe.Message}\n");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ОШИБКА: {e.Message}\n");
             }
         }
 
@@ -278,65 +270,60 @@ internal class Program
         {
             string input;
 
-            while (true)
+            try
             {
-                try
+                // ВВОД ФАМИЛИИ
+                Console.Write("Введите фамилию: ");
+                input = Console.ReadLine();
+                input = input.Trim(' '); // убираются пробелы в начале и в конце строки
+
+                if (Regex.IsMatch(input, @"[\p{P}\d\s]", RegexOptions.IgnoreCase)) // паттерн исключает цифры, всякие символы и пробелы 
+                                                                                // можно было умнее паттерн составить, чтобы сразу вводить полное ФИО,
+                                                                                // но я эту домашку уже миллиард часов делаю, поэтому час попытался разобраться с паттерном, но не смог
                 {
-                    // ВВОД ФАМИЛИИ
-                    Console.Write("Введите фамилию: ");
-                    input = Console.ReadLine();
-                    input = input.Trim(' '); // убираются пробелы в начале и в конце
-
-                    if (Regex.IsMatch(input, @"[\p{P}\d\s]", RegexOptions.IgnoreCase)) // паттерн исключает цифры, всякие символы и пробелы 
-                                                                                    // можно было умнее паттерн составить, чтобы сразу вводить полное ФИО,
-                                                                                    // но я эту домашку уже миллиард часов делаю, поэтому час попытался разобраться с Regex, не смог
-                    {
-                        throw new FormatException($"{input} не может быть фамилией");
-                    }
-
-                    this.FIO = input + " ";
-
-
-                    // ВВОД ИМЕНИ
-                    Console.Write("Введите имя: ");
-                    input = Console.ReadLine();
-                    input = input.Trim(' '); // убираются пробелы в начале и в конце
-
-                    if (Regex.IsMatch(input, @"[\p{P}\d\s]", RegexOptions.IgnoreCase))
-                    {
-                        throw new FormatException($"{input} не может быть именем");
-                    }
-
-                    this.FIO += input + " ";
-
-
-                    // ВВОД ОТЧЕСТВА
-                    Console.Write("Введите отчество: ");
-                    input = Console.ReadLine();
-                    input = input.Trim(' '); // убираются пробелы в начале и в конце
-
-                    if (Regex.IsMatch(input, @"[\p{P}\d\s]", RegexOptions.IgnoreCase))
-                    {
-                        throw new FormatException($"{input} не может быть отчеством");
-                    }
-
-                    this.FIO += input + " ";
-
-                    break;
+                    throw new FormatException($"ваш ввод ({input}) не может быть фамилией");
                 }
 
-                catch (FormatException fe)
+                this.FIO = input + " ";
+
+
+                // ВВОД ИМЕНИ
+                Console.Write("Введите имя: ");
+                input = Console.ReadLine();
+                input = input.Trim(' '); // убираются пробелы в начале и в конце строки
+
+                if (Regex.IsMatch(input, @"[\p{P}\d\s]", RegexOptions.IgnoreCase))
                 {
-                    Console.WriteLine($"ОШИБКА: вы ввели не фамилию! ({fe.Message})\n");
+                    throw new FormatException($"ваш ввод ({input}) не может быть именем");
                 }
-                catch (OverflowException oe)
+
+                this.FIO += input + " ";
+
+
+                // ВВОД ОТЧЕСТВА
+                Console.Write("Введите отчество: ");
+                input = Console.ReadLine();
+                input = input.Trim(' '); // убираются пробелы в начале и в конце строки
+
+                if (Regex.IsMatch(input, @"[\p{P}\d\s]", RegexOptions.IgnoreCase))
                 {
-                    Console.WriteLine($"ОШИБКА: вы ввели не четырёхзначное число! ({oe.Message})\n");
+                    throw new FormatException($"ваш ввод ({input}) не может быть отчеством");
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"ОШИБКА: что-то сломалось! ({e.Message})\n");
-                }
+
+                this.FIO += input + " ";
+            }
+
+            catch (FormatException fe)
+            {
+                Console.WriteLine($"ОШИБКА: {fe.Message}\n");
+            }
+            catch (OverflowException oe)
+            {
+                Console.WriteLine($"ОШИБКА: {oe.Message}\n");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ОШИБКА: {e.Message}\n");
             }
         }
 
@@ -344,63 +331,55 @@ internal class Program
         {
             int input;
 
-            while (true)
+            try
             {
-                try
+                // ВВОД ГОДА
+                Console.Write("Введите год: ");
+                int.TryParse(Console.ReadLine(), out input);
+
+                if (input < 1900 || input > 2023)
                 {
-                    // ВВОД ГОДА
-                    Console.Write("Введите год: ");
-                    int.TryParse(Console.ReadLine(), out input);
-
-                    if (input < 1900 || input > 2023)
-                    {
-                        throw new OverflowException($"{input} не может быть годом");
-                    }
-
-                    this.dateOfIssue.AddYears(1000);
-                    Console.WriteLine($"Year {dateOfIssue.Year}");
-
-
-                    // ВВОД МЕСЯЦА
-                    Console.Write("Введите месяц: ");
-                    int.TryParse(Console.ReadLine(), out input);
-
-                    if (input < 1 || input > 12)
-                    {
-                        throw new OverflowException($"{input} не может быть месяцем");
-                    }
-
-                    this.dateOfIssue.AddMonths(input);
-                    Console.WriteLine($"MONTH {dateOfIssue.Month}");
-
-
-                    // ВВОД ДНЯ
-                    Console.Write("Введите день: ");
-                    int.TryParse(Console.ReadLine(), out input);
-
-                    if (input < 1 || input > 31)
-                    {
-                        throw new OverflowException($"{input} не может быть днём");
-                    }
-
-                    this.dateOfIssue.AddDays(input);
-                    Console.WriteLine($"Day {dateOfIssue.Day}");
-
-                    break;
+                    throw new OverflowException($"введённое значение не может быть годом");
                 }
 
-                catch (FormatException fe)
+                this.dateOfIssue = this.dateOfIssue.AddYears(input - 1);
+
+
+                // ВВОД МЕСЯЦА
+                Console.Write("Введите месяц: ");
+                int.TryParse(Console.ReadLine(), out input);
+
+                if (input < 1 || input > 12)
                 {
-                    Console.WriteLine($"ОШИБКА: {fe.Message}\n");
+                    throw new OverflowException($"введённое значение не может быть месяцем");
                 }
-                catch (OverflowException oe)
+
+                this.dateOfIssue = this.dateOfIssue.AddMonths(input - 1);
+
+
+                // ВВОД ДНЯ
+                Console.Write("Введите день: ");
+                int.TryParse(Console.ReadLine(), out input);
+
+                if (input < 1 || input > 31)
                 {
-                    Console.WriteLine($"ОШИБКА: {oe.Message}\n");
+                    throw new OverflowException($"введённое значение не может быть днём");
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"ОШИБКА: {e.Message}\n");
-                }
+
+                this.dateOfIssue = this.dateOfIssue.AddDays(input - 1);
+            }
+
+            catch (FormatException fe)
+            {
+                Console.WriteLine($"ОШИБКА: {fe.Message}\n");
+            }
+            catch (OverflowException oe)
+            {
+                Console.WriteLine($"ОШИБКА: {oe.Message}\n");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ОШИБКА: {e.Message}\n");
             }
         }
 
@@ -419,6 +398,7 @@ internal class Program
 
 
 
+
     /*
      * Задание 4
     Пользователь вводит в строку с клавиатуры логическое выражение. Например, 3>2 или 7<3. 
@@ -429,31 +409,68 @@ internal class Program
 
     static void Exercise4()
     {
+        string input;
 
+        try
+        {
+            Console.WriteLine("ВЫЧИСЛЕНИЕ ЛОГИЧЕСКИХ ВЫРАЖЕНИЙ");
+            Console.WriteLine("* в выражениях могут быть только целые числа");
+            Console.WriteLine("* в выражениях могут быть только эти операторы: <, >, <=, >=, ==, !=");
+            Console.WriteLine("* выражения должны быть в формате 3>2\n");
+            Console.Write("Введите логическое выражение: ");
+
+            input = Console.ReadLine();
+            input = input.Trim(' '); // убирает пробелы в начале и в конце строки
+
+            if (!Regex.IsMatch(input, @"^\b(\d+)((<)|(>)|(<=)|(>=)|(==)|(!=))(\d+)\b$")) // проверка на соответствие формату
+            {
+                throw new FormatException($"ваш ввод ({input}) не равен формату");
+            }
+   
+            switch (Convert.ToString(Regex.Match(input, @"((<)|(>)|(<=)|(>=)|(!=)|(==))"))) // вывод результата
+            {
+                case "<": Console.Write($"Результат: {Convert.ToInt32(Convert.ToString(Regex.Match(input, @"^\d+"))) < Convert.ToInt32(Convert.ToString(Regex.Match(input, @"\d+$")))}"); break;
+                case ">": Console.Write($"Результат: {Convert.ToInt32(Convert.ToString(Regex.Match(input, @"^\d+"))) > Convert.ToInt32(Convert.ToString(Regex.Match(input, @"\d+$")))}"); break;
+                case "<=": Console.Write($"Результат: {Convert.ToInt32(Convert.ToString(Regex.Match(input, @"^\d+"))) <= Convert.ToInt32(Convert.ToString(Regex.Match(input, @"\d+$")))}"); break;
+                case ">=": Console.Write($"Результат: {Convert.ToInt32(Convert.ToString(Regex.Match(input, @"^\d+"))) >= Convert.ToInt32(Convert.ToString(Regex.Match(input, @"\d+$")))}"); break;
+                case "==": Console.Write($"Результат: {Convert.ToInt32(Convert.ToString(Regex.Match(input, @"^\d+"))) == Convert.ToInt32(Convert.ToString(Regex.Match(input, @"\d+$")))}"); break;
+                case "!=": Console.Write($"Результат: {Convert.ToInt32(Convert.ToString(Regex.Match(input, @"^\d+"))) != Convert.ToInt32(Convert.ToString(Regex.Match(input, @"\d+$")))}"); break;
+                default: break;
+            }
+        }
+
+        catch (OverflowException oe)
+        {
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: {oe.Message}\n"); Console.ResetColor();
+        }
+        catch (FormatException ae)
+        {
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: {ae.Message}\n"); Console.ResetColor();
+        }
+        catch (Exception e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"ОШИБКА: {e.Message}\n"); Console.ResetColor();
+        }
     }
-
 
 
 
     static void Main()
     {
-        //Exercise1(); // работает, но неправильно сделано
-        //Exercise2(); // +
+    // ЗАДАНИЯ 1 И 2
+        //Exercise1(); // полностью работает, но неправильно сделано
+        //Exercise2();
 
-
-        ForeignPassport foreignPassport = new ForeignPassport();
-        Console.WriteLine($"ИСХОДНЫЙ ПАСПОРТ: \n{foreignPassport}");
-
+    // ЗАДАНИЕ 3 
+        //ForeignPassport foreignPassport = new ForeignPassport();
+        //Console.WriteLine($"ИСХОДНЫЙ ПАСПОРТ: \n{foreignPassport}");
 
         //foreignPassport.EnterID(); Console.WriteLine();
         //foreignPassport.EnterFIO(); Console.WriteLine();
-        foreignPassport.EnterDateOfIssue(); Console.WriteLine();
+        //foreignPassport.EnterDateOfIssue(); Console.WriteLine();
+        //Console.WriteLine($"ИЗМЕНЁННЫЙ ПАСПОРТ: \n{foreignPassport}");
 
-        Console.WriteLine($"ИЗМЕНЁННЫЙ ПАСПОРТ: \n{foreignPassport}");
-
-
-
-
-        //Exercise4(); //
+    // ЗАДАНИЕ 4
+        //Exercise4();
     }
 }
